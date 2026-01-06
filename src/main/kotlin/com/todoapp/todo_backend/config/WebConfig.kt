@@ -14,7 +14,8 @@ class WebConfig : WebMvcConfigurer {
                 "http://127.0.0.1:3000",
                 "https://*.vercel.app",
                 "https://*.netlify.app",
-                "https://*.onrender.com"
+                "https://*.onrender.com",
+                "https://todo-frontend-p56u.onrender.com"
             )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
             .allowedHeaders("*")
