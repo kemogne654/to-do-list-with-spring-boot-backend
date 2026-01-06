@@ -45,6 +45,18 @@ interface TodoRepository : JpaRepository<Todo, String> {
     @Query("SELECT t FROM Todo t WHERE (t.userId = :userId OR t.assignedTo = :userEmail) AND t.dueDate < :today AND t.status != 'completed'")
     fun findOverdueTodosForUserOrAssigned(userId: String, userEmail: String, today: LocalDate): List<Todo>
     
+    // Method to get only assigned tasks (not created tasks)
+    fun findByAssignedTo(userEmail: String): List<Todo>
+    
+    @Query("SELECT t FROM Todo t WHERE t.assignedTo = :userEmail AND t.status = :status")
+    fun findByAssignedToAndStatus(userEmail: String, status: Status): List<Todo>
+    
+    @Query("SELECT t FROM Todo t WHERE t.assignedTo = :userEmail AND t.category = :category")
+    fun findByAssignedToAndCategory(userEmail: String, category: Category): List<Todo>
+    
+    @Query("SELECT t FROM Todo t WHERE t.assignedTo = :userEmail AND t.priority = :priority")
+    fun findByAssignedToAndPriority(userEmail: String, priority: Priority): List<Todo>
+    
     fun countByUserIdAndStatus(userId: String, status: Status): Int
     fun countByUserIdAndCategory(userId: String, category: Category): Int
     fun countByUserIdAndPriority(userId: String, priority: Priority): Int

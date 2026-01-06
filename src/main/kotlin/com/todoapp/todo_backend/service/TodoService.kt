@@ -12,22 +12,32 @@ import java.util.*
 class TodoService(private val todoRepository: TodoRepository) {
     
     fun getTodos(userId: String, userEmail: String, status: Status?, category: Category?, priority: Priority?, overdue: Boolean?): TodosResponse {
-        val todos = when {
-            overdue == true -> todoRepository.findOverdueTodosForUserOrAssigned(userId, userEmail, LocalDate.now())
-            status != null && category == null && priority == null -> 
-                todoRepository.findByUserIdOrAssignedToAndStatus(userId, userEmail, status)
-            status == null && category != null && priority == null -> 
-                todoRepository.findByUserIdOrAssignedToAndCategory(userId, userEmail, category)
-            status == null && category == null && priority != null -> 
-                todoRepository.findByUserIdOrAssignedToAndPriority(userId, userEmail, priority)
-            else -> todoRepository.findByUserIdOrAssignedTo(userId, userEmail)
+        // Get tasks created by user
+        val createdTodos = when {
+            overdue == true -> todoRepository.findOverdueTodos(userId, LocalDate.now())
+            status != null -> todoRepository.findByUserIdAndStatus(userId, status)
+            category != null -> todoRepository.findByUserIdAndCategory(userId, category)
+            priority != null -> todoRepository.findByUserIdAndPriority(userId, priority)
+            else -> todoRepository.findByUserId(userId)
         }
         
-        // Apply additional filters in memory for complex combinations
-        val filteredTodos = todos.filter { todo ->
+        // Get tasks assigned to user
+        val assignedTodos = when {
+            status != null -> todoRepository.findByAssignedToAndStatus(userEmail, status)
+            category != null -> todoRepository.findByAssignedToAndCategory(userEmail, category)
+            priority != null -> todoRepository.findByAssignedToAndPriority(userEmail, priority)
+            else -> todoRepository.findByAssignedTo(userEmail)
+        }
+        
+        // Combine and deduplicate
+        val allTodos = (createdTodos + assignedTodos).distinctBy { it.id }
+        
+        // Apply additional filters
+        val filteredTodos = allTodos.filter { todo ->
             (status == null || todo.status == status) &&
             (category == null || todo.category == category) &&
-            (priority == null || todo.priority == priority)
+            (priority == null || todo.priority == priority) &&
+            (overdue != true || (todo.dueDate != null && todo.dueDate!! < LocalDate.now() && todo.status != Status.completed))
         }
         
         val todoResponses = filteredTodos.map { it.toResponse() }
