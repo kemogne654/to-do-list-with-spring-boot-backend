@@ -16,7 +16,7 @@ spring:
         dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
 gg:
   jte:
-    development-mode: ${JTE_DEV_MODE:true}
+    usePrecompiledTemplates: true
 
 server:
   port: ${PORT:8080}
