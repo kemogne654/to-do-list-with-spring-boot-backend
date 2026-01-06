@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: todo-backend
+    env: java
+    buildCommand: ./gradlew build -x test
+    startCommand: java -jar build/libs/todo-backend-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DDL_AUTO
+        value: update
+      - key: SHOW_SQL
+        value: "false"
+      - key: H2_CONSOLE_ENABLED
+        value: "false"
+      - key: JTE_DEV_MODE
+        value: "false"
+      - key: HIBERNATE_DIALECT
+        value: org.hibernate.dialect.PostgreSQLDialect
+
+databases:
+  - name: todo-postgres
+    databaseName: todoapp
+    user: todouser
