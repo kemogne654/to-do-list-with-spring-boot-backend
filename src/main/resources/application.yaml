@@ -4,6 +4,9 @@ spring:
   datasource:
     url: ${DATABASE_URL:jdbc:h2:mem:testdb}
     driver-class-name: ${DB_DRIVER:org.postgresql.Driver}
+  sql:
+    init:
+      platform: postgresql
   jpa:
     hibernate:
       ddl-auto: ${DDL_AUTO:update}
